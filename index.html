@@ -585,14 +585,21 @@
   <!-- Firebase Auth + UI logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      sendPasswordResetEmail,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
     // Your Firebase configuration  
     const firebaseConfig = {
@@ -608,6 +615,8 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
+
 
     // DOM elements
     const tabLogin = document.getElementById("tab-login");
@@ -709,26 +718,51 @@
     });
 
     // SIGNUP
-    signupForm?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("signup-email").value.trim();
-      const password = document.getElementById("signup-password").value;
+signupForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("signup-email").value.trim();
+  const password = document.getElementById("signup-password").value;
 
-      signupSubmit.disabled = true;
-      showError("");
-      showSuccess("");
+  signupSubmit.disabled = true;
+  showError("");
+  showSuccess("");
 
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        showSuccess("Account created and you are now signed in.");
-        setActiveTab("login");
-      } catch (err) {
-        console.error(err);
-        showError("Could not create account. The email may be in use or the password too weak.");
-      } finally {
-        signupSubmit.disabled = false;
-      }
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const user = cred.user;
+
+    // Create or initialize Firestore user doc
+    const userRef = doc(db, "users", user.uid);
+    await setDoc(userRef, {
+      email: email,
+      plan: "free",           // default plan
+      createdAt: serverTimestamp(),
+      proSince: null
     });
+
+    showSuccess("Account created and you are now signed in.");
+    setActiveTab("login");
+  } catch (err) {
+    console.error(err);
+    let msg = "Could not create account. Please try again.";
+
+    if (err.code === "auth/email-already-in-use") {
+      msg = "That email is already in use. Try logging in instead.";
+    } else if (err.code === "auth/weak-password") {
+      msg = "Password is too weak. Use at least 6 characters.";
+    } else if (err.code === "auth/invalid-email") {
+      msg = "That email address doesn’t look valid.";
+    } else if (err.code === "auth/operation-not-allowed") {
+      msg = "Email/password sign-in is not enabled in the project.";
+    } else if (err.code === "auth/unauthorized-domain") {
+      msg = "This domain is not allowed to use this sign-in method.";
+    }
+
+    showError(msg);
+  } finally {
+    signupSubmit.disabled = false;
+  }
+});
 
     // RESET PASSWORD
     resetForm?.addEventListener("submit", async (e) => {
@@ -759,21 +793,41 @@
       }
     });
 
+// OPTIONAL: Create Firestore doc if missing (for old accounts)
+async function ensureUserDoc(user) {
+  const userRef = doc(db, "users", user.uid);
+  const snap = await getDoc(userRef);
+
+  if (!snap.exists()) {
+    await setDoc(userRef, {
+      email: user.email || "",
+      plan: "free",
+      createdAt: serverTimestamp(),
+      proSince: null
+    });
+  }
+}
+
+// ---- END OF HELPER ----
+
+
     // AUTH STATE LISTENER
     onAuthStateChanged(auth, (user) => {
-      if (user) {
-        authStatus.style.display = "flex";
-        authStatusText.textContent = `Signed in as ${user.email || "(no email)"}`;
-        logoutButton.style.display = "inline";
-        // Option: hide forms when signed in
-        authForms.style.display = "none";
-      } else {
-        authStatus.style.display = "flex";
-        authStatusText.textContent = "Not signed in";
-        logoutButton.style.display = "none";
-        authForms.style.display = "block";
-      }
-    });
+  if (user) {
+    ensureUserDoc(user).catch(console.error);
+
+    authStatus.style.display = "flex";
+    authStatusText.textContent = `Signed in as ${user.email || "(no email)"}`;
+    logoutButton.style.display = "inline";
+    authForms.style.display = "none";
+  } else {
+    authStatus.style.display = "flex";
+    authStatusText.textContent = "Not signed in";
+    logoutButton.style.display = "none";
+    authForms.style.display = "block";
+  }
+});
+
   </script>
 </body>
 </html>
