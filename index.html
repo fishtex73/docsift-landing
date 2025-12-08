@@ -730,6 +730,8 @@ signupForm?.addEventListener("submit", async (e) => {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const user = cred.user;
+    
+ console.log("SIGNUP UID:", cred.user.uid);
 
     // Create or initialize Firestore user doc
     const userRef = doc(db, "users", user.uid);
@@ -739,6 +741,9 @@ signupForm?.addEventListener("submit", async (e) => {
       createdAt: serverTimestamp(),
       proSince: null
     });
+
+console.log("User doc created");
+
 
     showSuccess("Account created and you are now signed in.");
     setActiveTab("login");
