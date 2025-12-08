@@ -15,6 +15,167 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
+
+  <!-- Scoped styles for the auth section -->
+  <style>
+    .auth-section {
+      margin-top: 3rem;
+    }
+
+    .auth-card {
+      max-width: 520px;
+      margin: 0 auto;
+      background: #020617;
+      border-radius: 16px;
+      padding: 20px 20px 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+      border: 1px solid #111827;
+      color: #e5e7eb;
+    }
+
+    .auth-card h2 {
+      margin: 0 0 4px;
+      font-size: 1.35rem;
+    }
+
+    .auth-card p {
+      margin: 0 0 16px;
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      color: #9ca3af;
+      cursor: pointer;
+    }
+
+    .auth-tab-btn.active {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .auth-form label {
+      font-size: 0.85rem;
+      color: #e5e7eb;
+    }
+
+    .auth-form input[type="email"],
+    .auth-form input[type="password"] {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.9rem;
+    }
+
+    .auth-form input::placeholder {
+      color: #6b7280;
+    }
+
+    .auth-btn-primary {
+      margin-top: 4px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: none;
+      background: #22c55e;
+      color: #022c22;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .auth-btn-primary:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .auth-btn-link {
+      padding: 4px 0;
+      border: none;
+      background: transparent;
+      color: #60a5fa;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .auth-helper {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .auth-error {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: #f97373;
+      display: none;
+    }
+
+    .auth-success {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: #4ade80;
+      display: none;
+    }
+
+    .auth-status {
+      margin-top: 12px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+      background: #030712;
+      font-size: 0.8rem;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .auth-status span {
+      color: #9ca3af;
+    }
+
+    .auth-status strong {
+      color: #e5e7eb;
+    }
+
+    .auth-status button {
+      border: none;
+      background: transparent;
+      color: #fca5a5;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    @media (max-width: 640px) {
+      .auth-card {
+        padding: 16px 14px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -24,6 +185,7 @@
         <a href="#features">Features</a>
         <a href="#how-it-works">How it works</a>
         <a href="#pricing">Pricing</a>
+        <a href="#account">Account</a>
         <a href="#faq">FAQ</a>
         <a href="https://docsift.streamlit.app" class="nav-cta" target="_blank" rel="noopener">
           Open App
@@ -287,6 +449,86 @@
       </div>
     </section>
 
+    <!-- ACCOUNT / AUTH SECTION -->
+    <section id="account" class="section alt auth-section">
+      <div class="container">
+        <h2>DocSift account (email login)</h2>
+        <p class="section-subtitle">
+          Use your email and password to create an account or sign in. In the future, this account
+          will connect directly to your DocSift Pro subscription and usage.
+        </p>
+
+        <div class="auth-card" id="auth-card">
+          <h2>Sign in or create an account</h2>
+          <p>Use your email and a password you’ll remember. You can reset it at any time.</p>
+
+          <div class="auth-tabs">
+            <button type="button" class="auth-tab-btn active" id="tab-login">Log in</button>
+            <button type="button" class="auth-tab-btn" id="tab-signup">Create account</button>
+            <button type="button" class="auth-tab-btn" id="tab-reset">Reset password</button>
+          </div>
+
+          <div id="auth-forms">
+            <!-- LOGIN FORM -->
+            <form id="login-form" class="auth-form">
+              <label for="login-email">Email</label>
+              <input id="login-email" type="email" placeholder="you@example.com" required />
+
+              <label for="login-password">Password</label>
+              <input id="login-password" type="password" placeholder="••••••••" required />
+
+              <button type="submit" class="auth-btn-primary" id="login-submit">Log in</button>
+              <button type="button" class="auth-btn-link" id="login-to-signup">
+                Need an account? Create one
+              </button>
+              <button type="button" class="auth-btn-link" id="login-to-reset">
+                Forgot your password?
+              </button>
+            </form>
+
+            <!-- SIGNUP FORM -->
+            <form id="signup-form" class="auth-form" style="display:none;">
+              <label for="signup-email">Email</label>
+              <input id="signup-email" type="email" placeholder="you@example.com" required />
+
+              <label for="signup-password">Password</label>
+              <input id="signup-password" type="password" placeholder="At least 6 characters" required />
+
+              <button type="submit" class="auth-btn-primary" id="signup-submit">Create account</button>
+              <button type="button" class="auth-btn-link" id="signup-to-login">
+                Already have an account? Log in
+              </button>
+            </form>
+
+            <!-- RESET PASSWORD FORM -->
+            <form id="reset-form" class="auth-form" style="display:none;">
+              <label for="reset-email">Email</label>
+              <input id="reset-email" type="email" placeholder="you@example.com" required />
+
+              <button type="submit" class="auth-btn-primary" id="reset-submit">Send reset link</button>
+              <p class="auth-helper">
+                We'll email you a password reset link if there's an account for this address.
+              </p>
+              <button type="button" class="auth-btn-link" id="reset-to-login">
+                Back to log in
+              </button>
+            </form>
+          </div>
+
+          <div id="auth-error" class="auth-error"></div>
+          <div id="auth-success" class="auth-success"></div>
+
+          <div id="auth-status" class="auth-status">
+            <div>
+              <span>Status:</span>
+              <strong id="auth-status-text">Not signed in</strong>
+            </div>
+            <button type="button" id="logout-button">Log out</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- FAQ -->
     <section id="faq" class="section alt">
       <div class="container">
@@ -339,5 +581,199 @@
       </div>
     </div>
   </footer>
+
+  <!-- Firebase Auth + UI logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+    // Your Firebase configuration  
+    const firebaseConfig = {
+      apiKey: "AIzaSyCEWuC6JRAQ1pJRR85aFVPIkrb8oARnQjE",
+      authDomain: "docsift-prod.firebaseapp.com",
+      projectId: "docsift-prod",
+      storageBucket: "docsift-prod.firebasestorage.app",
+      messagingSenderId: "329761785362",
+      appId: "1:329761785362:web:286a596f5036b5ac963acb",
+      measurementId: "G-M6JL3DMG6B"  // not used, but OK to keep
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // DOM elements
+    const tabLogin = document.getElementById("tab-login");
+    const tabSignup = document.getElementById("tab-signup");
+    const tabReset = document.getElementById("tab-reset");
+
+    const loginForm = document.getElementById("login-form");
+    const signupForm = document.getElementById("signup-form");
+    const resetForm = document.getElementById("reset-form");
+
+    const loginToSignup = document.getElementById("login-to-signup");
+    const loginToReset = document.getElementById("login-to-reset");
+    const signupToLogin = document.getElementById("signup-to-login");
+    const resetToLogin = document.getElementById("reset-to-login");
+
+    const authError = document.getElementById("auth-error");
+    const authSuccess = document.getElementById("auth-success");
+    const authStatus = document.getElementById("auth-status");
+    const authStatusText = document.getElementById("auth-status-text");
+    const logoutButton = document.getElementById("logout-button");
+    const authForms = document.getElementById("auth-forms");
+
+    const loginSubmit = document.getElementById("login-submit");
+    const signupSubmit = document.getElementById("signup-submit");
+    const resetSubmit = document.getElementById("reset-submit");
+
+    function setActiveTab(tab) {
+      // buttons
+      tabLogin.classList.remove("active");
+      tabSignup.classList.remove("active");
+      tabReset.classList.remove("active");
+
+      if (tab === "login") tabLogin.classList.add("active");
+      if (tab === "signup") tabSignup.classList.add("active");
+      if (tab === "reset") tabReset.classList.add("active");
+
+      // forms
+      loginForm.style.display = tab === "login" ? "flex" : "none";
+      signupForm.style.display = tab === "signup" ? "flex" : "none";
+      resetForm.style.display = tab === "reset" ? "flex" : "none";
+
+      // messages
+      authError.style.display = "none";
+      authSuccess.style.display = "none";
+    }
+
+    function showError(msg) {
+      if (!msg) {
+        authError.style.display = "none";
+        return;
+      }
+      authError.textContent = msg;
+      authError.style.display = "block";
+      authSuccess.style.display = "none";
+    }
+
+    function showSuccess(msg) {
+      if (!msg) {
+        authSuccess.style.display = "none";
+        return;
+      }
+      authSuccess.textContent = msg;
+      authSuccess.style.display = "block";
+      authError.style.display = "none";
+    }
+
+    // Tab handlers
+    tabLogin?.addEventListener("click", () => setActiveTab("login"));
+    tabSignup?.addEventListener("click", () => setActiveTab("signup"));
+    tabReset?.addEventListener("click", () => setActiveTab("reset"));
+
+    loginToSignup?.addEventListener("click", () => setActiveTab("signup"));
+    loginToReset?.addEventListener("click", () => setActiveTab("reset"));
+    signupToLogin?.addEventListener("click", () => setActiveTab("login"));
+    resetToLogin?.addEventListener("click", () => setActiveTab("login"));
+
+    // Default tab
+    setActiveTab("login");
+
+    // LOGIN
+    loginForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      loginSubmit.disabled = true;
+      showError("");
+      showSuccess("");
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // onAuthStateChanged will handle UI update
+      } catch (err) {
+        console.error(err);
+        showError("Login failed. Please check your email and password.");
+      } finally {
+        loginSubmit.disabled = false;
+      }
+    });
+
+    // SIGNUP
+    signupForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("signup-email").value.trim();
+      const password = document.getElementById("signup-password").value;
+
+      signupSubmit.disabled = true;
+      showError("");
+      showSuccess("");
+
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        showSuccess("Account created and you are now signed in.");
+        setActiveTab("login");
+      } catch (err) {
+        console.error(err);
+        showError("Could not create account. The email may be in use or the password too weak.");
+      } finally {
+        signupSubmit.disabled = false;
+      }
+    });
+
+    // RESET PASSWORD
+    resetForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("reset-email").value.trim();
+
+      resetSubmit.disabled = true;
+      showError("");
+      showSuccess("");
+
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showSuccess("If an account exists for that email, a reset link has been sent.");
+      } catch (err) {
+        console.error(err);
+        showError("Could not send reset link. Please try again later.");
+      } finally {
+        resetSubmit.disabled = false;
+      }
+    });
+
+    // LOG OUT
+    logoutButton?.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    // AUTH STATE LISTENER
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        authStatus.style.display = "flex";
+        authStatusText.textContent = `Signed in as ${user.email || "(no email)"}`;
+        logoutButton.style.display = "inline";
+        // Option: hide forms when signed in
+        authForms.style.display = "none";
+      } else {
+        authStatus.style.display = "flex";
+        authStatusText.textContent = "Not signed in";
+        logoutButton.style.display = "none";
+        authForms.style.display = "block";
+      }
+    });
+  </script>
 </body>
 </html>
