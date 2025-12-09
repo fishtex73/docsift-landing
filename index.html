@@ -493,40 +493,75 @@
           <div id="auth-forms">
             <!-- LOGIN FORM -->
             <form id="login-form" class="auth-form">
-              <form id="login-form" class="auth-form">
-  <label for="login-email">Email</label>
-  <input id="login-email" type="email" placeholder="you@example.com" required />
+  <h3>Welcome Back</h3>
 
-  <label for="login-password">Password</label>
-  <input id="login-password" type="password" placeholder="••••••••" required />
+  <div class="input-group">
+    <label for="login-email">Email</label>
+    <input
+      id="login-email"
+      type="email"
+      required
+      autocomplete="email"
+      placeholder="you@example.com"
+    />
+  </div>
 
-  <label class="auth-toggle">
+  <div class="input-group">
+    <label for="login-password">Password</label>
+    <input
+      id="login-password"
+      type="password"
+      required
+      autocomplete="current-password"
+      placeholder="Enter your password"
+    />
+  </div>
+
+  <label class="show-password">
     <input type="checkbox" id="login-show-password" />
-    <span>Show password</span>
+    Show Password
   </label>
 
-  <button type="submit" class="auth-btn-primary" id="login-submit">Log in</button>
-  <button type="button" class="auth-btn-link" id="login-to-signup">Need an account? Create one</button>
-  <button type="button" class="auth-btn-link" id="login-to-reset">Forgot your password?</button>
+  <button type="submit" class="btn primary">Log In</button>
+
+  <p><a href="#" id="forgot-password-link">Forgot your password?</a></p>
 </form>
+
 
             <!-- SIGNUP FORM -->
-            <form id="signup-form" class="auth-form" style="display:none;">
-              <form id="signup-form" class="auth-form" style="display:none;">
-  <label for="signup-email">Email</label>
-  <input id="signup-email" type="email" placeholder="you@example.com" required />
+            <form id="signup-form" class="auth-form">
+  <h3>Create Your Account</h3>
 
-  <label for="signup-password">Password</label>
-  <input id="signup-password" type="password" placeholder="At least 6 characters" required />
+  <div class="input-group">
+    <label for="signup-email">Email</label>
+    <input
+      id="signup-email"
+      type="email"
+      required
+      autocomplete="email"
+      placeholder="you@example.com"
+    />
+  </div>
 
-  <label class="auth-toggle">
+  <div class="input-group">
+    <label for="signup-password">Password</label>
+    <input
+      id="signup-password"
+      type="password"
+      required
+      autocomplete="new-password"
+      placeholder="Create a password"
+    />
+  </div>
+
+  <label class="show-password">
     <input type="checkbox" id="signup-show-password" />
-    <span>Show password</span>
+    Show Password
   </label>
 
-  <button type="submit" class="auth-btn-primary" id="signup-submit">Create account</button>
-  <button type="button" class="auth-btn-link" id="signup-to-login">Already have an account? Log in</button>
+  <button type="submit" class="btn primary">Sign Up</button>
 </form>
+
 
 
             <!-- RESET PASSWORD FORM -->
