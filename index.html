@@ -486,39 +486,41 @@
           <div id="auth-forms">
             <!-- LOGIN FORM -->
             <form id="login-form" class="auth-form">
-              <label for="login-password">Password</label>
-	      <input id="login-password" type="password" placeholder="••••••••" required />
+              <form id="login-form" class="auth-form">
+  <label for="login-email">Email</label>
+  <input id="login-email" type="email" placeholder="you@example.com" required />
 
-	      <label class="auth-toggle">
- 	      <input type="checkbox" id="login-show-password" />
-  	      <span>Show password</span>
-	      </label>
+  <label for="login-password">Password</label>
+  <input id="login-password" type="password" placeholder="••••••••" required />
 
-	      <button type="submit" class="auth-btn-primary" id="login-submit">Log in</button>
-	      <button type="button" class="auth-btn-link" id="login-to-signup">
-  		Need an account? Create one
-	      </button>
-	      <button type="button" class="auth-btn-link" id="login-to-reset">
-  	       Forgot your password?
-	      </button>
-            </form>
+  <label class="auth-toggle">
+    <input type="checkbox" id="login-show-password" />
+    <span>Show password</span>
+  </label>
+
+  <button type="submit" class="auth-btn-primary" id="login-submit">Log in</button>
+  <button type="button" class="auth-btn-link" id="login-to-signup">Need an account? Create one</button>
+  <button type="button" class="auth-btn-link" id="login-to-reset">Forgot your password?</button>
+</form>
 
             <!-- SIGNUP FORM -->
             <form id="signup-form" class="auth-form" style="display:none;">
-              <label for="signup-password">Password</label>
-<input id="signup-password" type="password" placeholder="At least 6 characters" required />
+              <form id="signup-form" class="auth-form" style="display:none;">
+  <label for="signup-email">Email</label>
+  <input id="signup-email" type="email" placeholder="you@example.com" required />
 
-<label class="auth-toggle">
-  <input type="checkbox" id="signup-show-password" />
-  <span>Show password</span>
-</label>
+  <label for="signup-password">Password</label>
+  <input id="signup-password" type="password" placeholder="At least 6 characters" required />
 
-<button type="submit" class="auth-btn-primary" id="signup-submit">Create account</button>
-<button type="button" class="auth-btn-link" id="signup-to-login">
-  Already have an account? Log in
-</button>
+  <label class="auth-toggle">
+    <input type="checkbox" id="signup-show-password" />
+    <span>Show password</span>
+  </label>
 
-            </form>
+  <button type="submit" class="auth-btn-primary" id="signup-submit">Create account</button>
+  <button type="button" class="auth-btn-link" id="signup-to-login">Already have an account? Log in</button>
+</form>
+
 
             <!-- RESET PASSWORD FORM -->
             <form id="reset-form" class="auth-form" style="display:none;">
@@ -769,9 +771,7 @@ signupForm?.addEventListener("submit", async (e) => {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const user = cred.user;
     
- console.log("SIGNUP UID:", cred.user.uid);
-
-    // Create or initialize Firestore user doc
+     // Create or initialize Firestore user doc
     const userRef = doc(db, "users", user.uid);
     await setDoc(userRef, {
       email: email,
@@ -779,8 +779,6 @@ signupForm?.addEventListener("submit", async (e) => {
       createdAt: serverTimestamp(),
       proSince: null
     });
-
-console.log("User doc created");
 
 
     showSuccess("Account created and you are now signed in.");
