@@ -236,14 +236,8 @@
             >
               Use DocSift Free
             </a>
-            <a
-              href="https://buy.stripe.com/14A7sLej62Qw7Xs2vsbZe00"
-              class="btn ghost"
-              target="_blank"
-              rel="noopener"
-            >
-              Get DocSift Pro →
-            </a>
+            <a href="#" id="upgrade-button" class="btn ghost">Get DocSift Pro →</a>
+
           </div>
 
           <p class="hero-note">
@@ -399,14 +393,8 @@
               <li>Study Guides & Full Reports</li>
               <li>PDF & Word report downloads</li>
             </ul>
-            <a
-              href="https://buy.stripe.com/14A7sLej62Qw7Xs2vsbZe00"
-              class="btn primary full"
-              target="_blank"
-              rel="noopener"
-            >
-              Get DocSift Pro
-            </a>
+            <a href="#" id="upgrade-button-2" class="btn primary full">Get DocSift Pro</a>
+
           </div>
         </div>
       </div>
@@ -688,6 +676,11 @@ import {
   serverTimestamp,
   getDoc
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import {
+  getFunctions,
+  httpsCallable,
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-functions.js";
+
 
     // Your Firebase configuration  
     const firebaseConfig = {
@@ -704,6 +697,12 @@ import {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+  const functions = getFunctions(app, "us-central1");
+  const createCheckoutSessionFn = httpsCallable(
+    functions,
+    "createCheckoutSession"
+  );
+
 
 
     // DOM elements
@@ -965,6 +964,43 @@ async function ensureUserDoc(user) {
         }
       }
     });
+
+// === UPGRADE TO PRO (Stripe Checkout) ===
+async function startUpgradeCheckout() {
+  showError("");
+  showSuccess("");
+
+  const user = auth.currentUser;
+  if (!user) {
+    showError("You must be logged in to upgrade to Pro.");
+    setActiveTab("login");
+    return;
+  }
+
+  try {
+    const result = await createCheckoutSessionFn({});
+
+    if (result.data?.url) {
+      window.location.href = result.data.url;  // Go to Stripe Checkout
+    } else {
+      showError("Could not start checkout. Please try again later.");
+    }
+  } catch (err) {
+    console.error("Upgrade error:", err);
+    showError("Failed to start checkout. Please try again.");
+  }
+}
+
+// Attach handlers to upgrade buttons
+document.getElementById("upgrade-button")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  startUpgradeCheckout();
+});
+
+document.getElementById("upgrade-button-2")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  startUpgradeCheckout();
+});
 
 
   </script>
