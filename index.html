@@ -160,7 +160,7 @@
       color: #e5e7eb;
     }
 
-    .auth-status button {
+        .auth-status button {
       border: none;
       background: transparent;
       color: #fca5a5;
@@ -168,6 +168,12 @@
       cursor: pointer;
       text-decoration: underline;
       padding: 0;
+    }
+
+    .plan-status {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-top: 4px;
     }
 
 .auth-toggle {
@@ -179,6 +185,7 @@
   margin-top: -4px;
   margin-bottom: 4px;
 }
+
 
 .auth-toggle input {
   accent-color: #22c55e;
@@ -541,12 +548,14 @@
           <div id="auth-success" class="auth-success"></div>
 
           <div id="auth-status" class="auth-status">
-            <div>
-              <span>Status:</span>
-              <strong id="auth-status-text">Not signed in</strong>
-            </div>
-            <button type="button" id="logout-button">Log out</button>
-          </div>
+  		<div>
+    			<span>Status:</span>
+    			<strong id="auth-status-text">Not signed in</strong>
+    			<div id="plan-status" class="plan-status"></div>
+  		</div>
+  		<button type="button" id="logout-button">Log out</button>
+	  </div>
+
         </div>
       </div>
     </section>
@@ -658,6 +667,7 @@ import {
     const authSuccess = document.getElementById("auth-success");
     const authStatus = document.getElementById("auth-status");
     const authStatusText = document.getElementById("auth-status-text");
+    const planStatus = document.getElementById("plan-status");
     const logoutButton = document.getElementById("logout-button");
     const authForms = document.getElementById("auth-forms");
 
@@ -852,22 +862,53 @@ async function ensureUserDoc(user) {
 // ---- END OF HELPER ----
 
 
-    // AUTH STATE LISTENER
-    onAuthStateChanged(auth, (user) => {
-  if (user) {
-    ensureUserDoc(user).catch(console.error);
+        // AUTH STATE LISTENER
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Show status UI and hide forms
+        authStatus.style.display = "flex";
+        authStatusText.textContent = `Signed in as ${user.email || "(no email)"}`;
+        logoutButton.style.display = "inline";
+        authForms.style.display = "block"; // keep forms visible container, tabs, etc., if you prefer; or "none" to hide them
+        if (planStatus) {
+          planStatus.textContent = "Loading plan…";
+        }
 
-    authStatus.style.display = "flex";
-    authStatusText.textContent = `Signed in as ${user.email || "(no email)"}`;
-    logoutButton.style.display = "inline";
-    authForms.style.display = "none";
-  } else {
-    authStatus.style.display = "flex";
-    authStatusText.textContent = "Not signed in";
-    logoutButton.style.display = "none";
-    authForms.style.display = "block";
-  }
-});
+        try {
+          // Make sure the Firestore user doc exists for older accounts
+          await ensureUserDoc(user);
+
+          // Now read the user document to get the plan
+          const userRef = doc(db, "users", user.uid);
+          const snap = await getDoc(userRef);
+
+          let plan = "free";
+          if (snap.exists()) {
+            const data = snap.data();
+            plan = data.plan || "free";
+          }
+
+          if (planStatus) {
+            planStatus.textContent = plan === "pro" ? "Pro plan" : "Free plan";
+          }
+        } catch (err) {
+          console.error("Error loading user plan:", err);
+          if (planStatus) {
+            planStatus.textContent = "Free plan";
+          }
+        }
+      } else {
+        // Not signed in
+        authStatus.style.display = "flex";
+        authStatusText.textContent = "Not signed in";
+        logoutButton.style.display = "none";
+        authForms.style.display = "block";
+        if (planStatus) {
+          planStatus.textContent = "";
+        }
+      }
+    });
+
 
   </script>
 </body>
