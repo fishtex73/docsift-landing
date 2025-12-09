@@ -170,6 +170,21 @@
       padding: 0;
     }
 
+.auth-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
+.auth-toggle input {
+  accent-color: #22c55e;
+}
+
+
     @media (max-width: 640px) {
       .auth-card {
         padding: 16px 14px 20px;
@@ -471,33 +486,38 @@
           <div id="auth-forms">
             <!-- LOGIN FORM -->
             <form id="login-form" class="auth-form">
-              <label for="login-email">Email</label>
-              <input id="login-email" type="email" placeholder="you@example.com" required />
-
               <label for="login-password">Password</label>
-              <input id="login-password" type="password" placeholder="••••••••" required />
+	      <input id="login-password" type="password" placeholder="••••••••" required />
 
-              <button type="submit" class="auth-btn-primary" id="login-submit">Log in</button>
-              <button type="button" class="auth-btn-link" id="login-to-signup">
-                Need an account? Create one
-              </button>
-              <button type="button" class="auth-btn-link" id="login-to-reset">
-                Forgot your password?
-              </button>
+	      <label class="auth-toggle">
+ 	      <input type="checkbox" id="login-show-password" />
+  	      <span>Show password</span>
+	      </label>
+
+	      <button type="submit" class="auth-btn-primary" id="login-submit">Log in</button>
+	      <button type="button" class="auth-btn-link" id="login-to-signup">
+  		Need an account? Create one
+	      </button>
+	      <button type="button" class="auth-btn-link" id="login-to-reset">
+  	       Forgot your password?
+	      </button>
             </form>
 
             <!-- SIGNUP FORM -->
             <form id="signup-form" class="auth-form" style="display:none;">
-              <label for="signup-email">Email</label>
-              <input id="signup-email" type="email" placeholder="you@example.com" required />
-
               <label for="signup-password">Password</label>
-              <input id="signup-password" type="password" placeholder="At least 6 characters" required />
+<input id="signup-password" type="password" placeholder="At least 6 characters" required />
 
-              <button type="submit" class="auth-btn-primary" id="signup-submit">Create account</button>
-              <button type="button" class="auth-btn-link" id="signup-to-login">
-                Already have an account? Log in
-              </button>
+<label class="auth-toggle">
+  <input type="checkbox" id="signup-show-password" />
+  <span>Show password</span>
+</label>
+
+<button type="submit" class="auth-btn-primary" id="signup-submit">Create account</button>
+<button type="button" class="auth-btn-link" id="signup-to-login">
+  Already have an account? Log in
+</button>
+
             </form>
 
             <!-- RESET PASSWORD FORM -->
@@ -643,6 +663,10 @@ import {
     const signupSubmit = document.getElementById("signup-submit");
     const resetSubmit = document.getElementById("reset-submit");
 
+    const loginShowPassword = document.getElementById("login-show-password");
+    const signupShowPassword = document.getElementById("signup-show-password");
+
+
     function setActiveTab(tab) {
       // buttons
       tabLogin.classList.remove("active");
@@ -695,6 +719,20 @@ import {
 
     // Default tab
     setActiveTab("login");
+
+loginShowPassword?.addEventListener("change", (e) => {
+  const input = document.getElementById("login-password");
+  if (input) {
+    input.type = e.target.checked ? "text" : "password";
+  }
+});
+
+signupShowPassword?.addEventListener("change", (e) => {
+  const input = document.getElementById("signup-password");
+  if (input) {
+    input.type = e.target.checked ? "text" : "password";
+  }
+});
 
     // LOGIN
     loginForm?.addEventListener("submit", async (e) => {
