@@ -697,10 +697,10 @@ import {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-  const functions = getFunctions(app, "us-central1");
-  const createCheckoutSessionFn = httpsCallable(
-    functions,
-    "createCheckoutSession"
+    const functions = getFunctions(app, "us-central1");
+    const createCheckoutSessionFn = httpsCallable(
+      functions,
+      "createCheckoutSession"
   );
 
 
@@ -965,42 +965,80 @@ async function ensureUserDoc(user) {
       }
     });
 
-// === UPGRADE TO PRO (Stripe Checkout) ===
-async function startUpgradeCheckout() {
-  showError("");
-  showSuccess("");
+  // === Upgrade to DocSift Pro ===
+  async function startUpgradeCheckout() {
+    const user = auth.currentUser;
 
-  const user = auth.currentUser;
-  if (!user) {
-    showError("You must be logged in to upgrade to Pro.");
-    setActiveTab("login");
-    return;
-  }
+    // If not logged in, send them to Account section and show message
+    if (!user) {
+      const accountSection = document.getElementById("account");
+      if (accountSection) {
+        accountSection.scrollIntoView({ behavior: "smooth" });
+      }
 
-  try {
-    const result = await createCheckoutSessionFn({});
+      // Switch to Signup tab (or Login if you prefer)
+      if (typeof setActiveTab === "function") {
+        setActiveTab("signup");
+      }
 
-    if (result.data?.url) {
-      window.location.href = result.data.url;  // Go to Stripe Checkout
-    } else {
-      showError("Could not start checkout. Please try again later.");
+      if (typeof showError === "function") {
+        showError(
+          "Please create an account or log in before upgrading to DocSift Pro."
+        );
+      }
+      return;
     }
-  } catch (err) {
-    console.error("Upgrade error:", err);
-    showError("Failed to start checkout. Please try again.");
+
+    // Logged in – call the callable function
+    try {
+      if (typeof showError === "function") showError("");
+      if (typeof showSuccess === "function") showSuccess("");
+
+      const result = await createCheckoutSessionFn({ plan: "pro" });
+
+      const data = result.data;
+      if (data && data.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        console.error(
+          "No URL returned from createCheckoutSession callable:",
+          data
+        );
+        if (typeof showError === "function") {
+          showError("Checkout session did not return a redirect URL.");
+        }
+      }
+    } catch (err) {
+      console.error("Error calling createCheckoutSession:", err);
+      if (typeof showError === "function") {
+        if (err.code === "unauthenticated") {
+          showError("Please log in again before upgrading to Pro.");
+        } else if (err.message) {
+          showError(err.message);
+        } else {
+          showError(
+            "Unexpected error starting checkout. Please try again later."
+          );
+        }
+      }
+    }
   }
-}
 
-// Attach handlers to upgrade buttons
-document.getElementById("upgrade-button")?.addEventListener("click", (e) => {
-  e.preventDefault();
-  startUpgradeCheckout();
-});
+  // Attach handlers to both upgrade buttons
+  const heroUpgradeBtn = document.getElementById("upgrade-button");
+  const pricingUpgradeBtn = document.getElementById("upgrade-button-2");
 
-document.getElementById("upgrade-button-2")?.addEventListener("click", (e) => {
-  e.preventDefault();
-  startUpgradeCheckout();
-});
+  heroUpgradeBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    startUpgradeCheckout();
+  });
+
+  pricingUpgradeBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    startUpgradeCheckout();
+  });
+
 
 
   </script>
