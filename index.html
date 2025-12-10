@@ -236,7 +236,12 @@
             >
               Use DocSift Free
             </a>
-            <a href="#account" id="upgrade-button" class="btn ghost">Get DocSift Pro →</a>
+            <a
+  href="https://buy.stripe.com/14A7sLej62Qw7Xs2vsbZe00"
+  class="btn ghost"
+>
+  Get DocSift Pro →
+</a>
 
           </div>
 
@@ -393,7 +398,12 @@
               <li>Study Guides & Full Reports</li>
               <li>PDF & Word report downloads</li>
             </ul>
-            <a href="#account" id="upgrade-button-2" class="btn primary full">Get DocSift Pro</a>
+            <a
+  href="https://buy.stripe.com/14A7sLej62Qw7Xs2vsbZe00"
+  class="btn primary full"
+>
+  Get DocSift Pro
+</a>
 
           </div>
         </div>
@@ -676,11 +686,6 @@ import {
   serverTimestamp,
   getDoc
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-import {
-  getFunctions,
-  httpsCallable,
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-functions.js";
-
 
     // Your Firebase configuration  
     const firebaseConfig = {
@@ -697,13 +702,7 @@ import {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const functions = getFunctions(app, "us-central1");
-    const createCheckoutSessionFn = httpsCallable(
-      functions,
-      "createCheckoutSession"
-  );
-
-
+    
 
     // DOM elements
     const tabLogin = document.getElementById("tab-login");
@@ -835,16 +834,23 @@ signupForm?.addEventListener("submit", async (e) => {
 
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
-    const user = cred.user;
-    
-     // Create or initialize Firestore user doc
-    const userRef = doc(db, "users", user.uid);
-    await setDoc(userRef, {
-      email: email,
-      plan: "free",           // default plan
-      createdAt: serverTimestamp(),
-      proSince: null
-    });
+const user = cred.user;
+const emailKey = (user.email || email).toLowerCase();
+
+// Create or merge Firestore user doc keyed by email
+const userRef = doc(db, "users", emailKey);
+await setDoc(
+  userRef,
+  {
+    email: emailKey,
+    uid: user.uid,
+    plan: "free",
+    createdAt: serverTimestamp(),
+    proSince: null,
+  },
+  { merge: true } // don't overwrite if webhook created it already
+);
+
 
 
     showSuccess("Account created and you are now signed in.");
@@ -902,18 +908,32 @@ signupForm?.addEventListener("submit", async (e) => {
 
 // OPTIONAL: Create Firestore doc if missing (for old accounts)
 async function ensureUserDoc(user) {
-  const userRef = doc(db, "users", user.uid);
+  const emailKey = (user.email || "").toLowerCase();
+  if (!emailKey) return;
+
+  const userRef = doc(db, "users", emailKey);
   const snap = await getDoc(userRef);
 
   if (!snap.exists()) {
     await setDoc(userRef, {
-      email: user.email || "",
+      email: emailKey,
+      uid: user.uid || null,
       plan: "free",
       createdAt: serverTimestamp(),
-      proSince: null
+      proSince: null,
     });
+  } else {
+    // Make sure uid is stored if missing
+    await setDoc(
+      userRef,
+      {
+        uid: user.uid || null,
+      },
+      { merge: true }
+    );
   }
 }
+
 
 // ---- END OF HELPER ----
 
@@ -935,14 +955,19 @@ async function ensureUserDoc(user) {
           await ensureUserDoc(user);
 
           // Now read the user document to get the plan
-          const userRef = doc(db, "users", user.uid);
-          const snap = await getDoc(userRef);
+          const emailKey = (user.email || "").toLowerCase();
+let plan = "free";
 
-          let plan = "free";
-          if (snap.exists()) {
-            const data = snap.data();
-            plan = data.plan || "free";
-          }
+if (emailKey) {
+  const userRef = doc(db, "users", emailKey);
+  const snap = await getDoc(userRef);
+
+  if (snap.exists()) {
+    const data = snap.data();
+    plan = data.plan || "free";
+  }
+}
+
 
           if (planStatus) {
             planStatus.textContent = plan === "pro" ? "Pro plan" : "Free plan";
@@ -965,82 +990,7 @@ async function ensureUserDoc(user) {
       }
     });
 
-  // === Upgrade to DocSift Pro ===
-  async function startUpgradeCheckout() {
-    const user = auth.currentUser;
-
-    // If not logged in, send them to Account section and show message
-    if (!user) {
-      const accountSection = document.getElementById("account");
-      if (accountSection) {
-        accountSection.scrollIntoView({ behavior: "smooth" });
-      }
-
-      // Switch to Signup tab (or Login if you prefer)
-      if (typeof setActiveTab === "function") {
-        setActiveTab("signup");
-      }
-
-      if (typeof showError === "function") {
-        showError(
-          "Please create an account or log in before upgrading to DocSift Pro."
-        );
-      }
-      return;
-    }
-
-    // Logged in – call the callable function
-    try {
-      if (typeof showError === "function") showError("");
-      if (typeof showSuccess === "function") showSuccess("");
-
-      const result = await createCheckoutSessionFn({ plan: "pro" });
-
-      const data = result.data;
-      if (data && data.url) {
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      } else {
-        console.error(
-          "No URL returned from createCheckoutSession callable:",
-          data
-        );
-        if (typeof showError === "function") {
-          showError("Checkout session did not return a redirect URL.");
-        }
-      }
-    } catch (err) {
-      console.error("Error calling createCheckoutSession:", err);
-      if (typeof showError === "function") {
-        if (err.code === "unauthenticated") {
-          showError("Please log in again before upgrading to Pro.");
-        } else if (err.message) {
-          showError(err.message);
-        } else {
-          showError(
-            "Unexpected error starting checkout. Please try again later."
-          );
-        }
-      }
-    }
-  }
-
-  // Attach handlers to both upgrade buttons
-  const heroUpgradeBtn = document.getElementById("upgrade-button");
-  const pricingUpgradeBtn = document.getElementById("upgrade-button-2");
-
-  heroUpgradeBtn?.addEventListener("click", (e) => {
-    e.preventDefault();
-    startUpgradeCheckout();
-  });
-
-  pricingUpgradeBtn?.addEventListener("click", (e) => {
-    e.preventDefault();
-    startUpgradeCheckout();
-  });
-
-
-
+ 
   </script>
 </body>
 </html>
