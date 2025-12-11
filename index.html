@@ -209,9 +209,14 @@
         <a href="#pricing">Pricing</a>
         <a href="#account">Account</a>
         <a href="#faq">FAQ</a>
-        <a href="https://docsift.streamlit.app" class="nav-cta" target="_blank" rel="noopener">
-          Open App
-        </a>
+        <a
+  href="https://docsift.streamlit.app"
+  class="nav-cta open-app-link"
+  target="_blank"
+  rel="noopener"
+>
+  Open App
+</a>
       </nav>
     </div>
   </header>
@@ -229,13 +234,13 @@
 
           <div class="hero-buttons">
             <a
-              href="https://docsift.streamlit.app"
-              class="btn primary"
-              target="_blank"
-              rel="noopener"
-            >
-              Use DocSift Free
-            </a>
+  href="https://docsift.streamlit.app"
+  class="btn primary open-app-link"
+  target="_blank"
+  rel="noopener"
+>
+  Use DocSift Free
+</a>
             <a
   href="https://buy.stripe.com/14A7sLej62Qw7Xs2vsbZe00"
   class="btn ghost"
@@ -378,13 +383,13 @@
               <li>No account required</li>
             </ul>
             <a
-              href="https://docsift.streamlit.app"
-              class="btn secondary full"
-              target="_blank"
-              rel="noopener"
-            >
-              Use DocSift Free
-            </a>
+  href="https://docsift.streamlit.app"
+  class="btn secondary full open-app-link"
+  target="_blank"
+  rel="noopener"
+>
+  Use DocSift Free
+</a>
           </div>
 
           <div class="pricing-card pro">
@@ -662,7 +667,14 @@
         <p>AI-powered document analysis toolkit.</p>
       </div>
       <div class="footer-right">
-        <a href="https://docsift.streamlit.app" target="_blank" rel="noopener">Open App</a>
+        <a
+  href="https://docsift.streamlit.app"
+  class="open-app-link"
+  target="_blank"
+  rel="noopener"
+>
+  Open App
+</a>
         <a href="mailto:support@getdocsift.com">Contact</a>
       </div>
     </div>
@@ -844,12 +856,13 @@ await setDoc(
   {
     email: emailKey,
     uid: user.uid,
-    plan: "free",
+    plan: "free",           // default plan
     createdAt: serverTimestamp(),
     proSince: null,
   },
-  { merge: true } // don't overwrite if webhook created it already
+  { merge: true } // don’t overwrite if webhook already created Pro
 );
+
 
 
 
@@ -926,13 +939,12 @@ async function ensureUserDoc(user) {
     // Make sure uid is stored if missing
     await setDoc(
       userRef,
-      {
-        uid: user.uid || null,
-      },
+      { uid: user.uid || null },
       { merge: true }
     );
   }
 }
+
 
 
 // ---- END OF HELPER ----
@@ -988,6 +1000,37 @@ if (emailKey) {
           planStatus.textContent = "";
         }
       }
+    });
+
+    // ---------- Open App links: pass Firebase ID token to Streamlit ----------
+
+    const STREAMLIT_APP_BASE_URL = "https://docsift.streamlit.app";
+
+    async function handleOpenAppClick(event) {
+      event.preventDefault();
+
+      const user = auth.currentUser;
+
+      // If no logged-in user, just open the app without a token (anonymous free use)
+      if (!user) {
+        window.open(STREAMLIT_APP_BASE_URL, "_blank");
+        return;
+      }
+
+      try {
+        const idToken = await user.getIdToken();
+        const url = `${STREAMLIT_APP_BASE_URL}/?token=${encodeURIComponent(idToken)}`;
+        window.open(url, "_blank");
+      } catch (err) {
+        console.error("Error getting ID token for Open App:", err);
+        // Fallback: open app without token
+        window.open(STREAMLIT_APP_BASE_URL, "_blank");
+      }
+    }
+
+    // Attach click handler to all links with class "open-app-link"
+    document.querySelectorAll(".open-app-link").forEach((link) => {
+      link.addEventListener("click", handleOpenAppClick);
     });
 
  
