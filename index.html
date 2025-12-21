@@ -246,18 +246,104 @@
     </section>
 
     <!-- ACCOUNT / AUTH SECTION -->
-    <section id="account" class="section">
-      <div class="container">
-        <h2>Account</h2>
-        <p class="section-subtitle">
-          Log in to view your plan status or upgrade to Pro.
-        </p>
+<section id="account" class="section alt auth-section">
+  <div class="container">
+    <h2>DocSift account (email login)</h2>
+    <p class="section-subtitle">
+      Use your email and password to create an account or sign in. In the future, this account
+      will connect directly to your DocSift Pro subscription and usage.
+    </p>
 
-        <div id="auth-container">
-          <!-- Firebase Auth UI handled by index.js -->
-        </div>
+    <div class="auth-card" id="auth-card">
+      <h2>Sign in or create an account</h2>
+      <p>Use your email and a password you’ll remember. You can reset it at any time.</p>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="tab-login">Log in</button>
+        <button type="button" class="auth-tab-btn" id="tab-signup">Create account</button>
+        <button type="button" class="auth-tab-btn" id="tab-reset">Reset password</button>
       </div>
-    </section>
+
+      <div id="auth-forms">
+        <!-- LOGIN FORM -->
+        <form id="login-form" class="auth-form">
+          <label for="login-email">Email</label>
+          <input id="login-email" type="email" placeholder="you@example.com" required />
+
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" placeholder="••••••••" required />
+
+          <label class="auth-toggle">
+            <input type="checkbox" id="login-show-password" />
+            <span>Show password</span>
+          </label>
+
+          <button type="submit" class="auth-btn-primary" id="login-submit">
+            Log in
+          </button>
+
+          <button type="button" class="auth-btn-link" id="login-to-signup">
+            Need an account? Create one
+          </button>
+
+          <button type="button" class="auth-btn-link" id="login-to-reset">
+            Forgot your password?
+          </button>
+        </form>
+
+        <!-- SIGNUP FORM -->
+        <form id="signup-form" class="auth-form" style="display:none;">
+          <label for="signup-email">Email</label>
+          <input id="signup-email" type="email" placeholder="you@example.com" required />
+
+          <label for="signup-password">Password</label>
+          <input id="signup-password" type="password" placeholder="At least 6 characters" required />
+
+          <label class="auth-toggle">
+            <input type="checkbox" id="signup-show-password" />
+            <span>Show password</span>
+          </label>
+
+          <button type="submit" class="auth-btn-primary" id="signup-submit">
+            Create account
+          </button>
+
+          <button type="button" class="auth-btn-link" id="signup-to-login">
+            Already have an account? Log in
+          </button>
+        </form>
+
+        <!-- RESET PASSWORD FORM -->
+        <form id="reset-form" class="auth-form" style="display:none;">
+          <label for="reset-email">Email</label>
+          <input id="reset-email" type="email" placeholder="you@example.com" required />
+
+          <button type="submit" class="auth-btn-primary" id="reset-submit">Send reset link</button>
+          <p class="auth-helper">
+            We'll email you a password reset link if there's an account for this address.
+          </p>
+          <button type="button" class="auth-btn-link" id="reset-to-login">
+            Back to log in
+          </button>
+        </form>
+      </div>
+
+      <div id="auth-error" class="auth-error"></div>
+      <div id="auth-success" class="auth-success"></div>
+
+      <div id="auth-status" class="auth-status">
+        <div>
+          <span>Status:</span>
+          <strong id="auth-status-text">Not signed in</strong>
+          <div id="plan-status" class="plan-status"></div>
+        </div>
+        <button type="button" id="logout-button">Log out</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 
     <!-- FAQ -->
     <section id="faq" class="section alt">
