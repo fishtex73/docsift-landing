@@ -246,112 +246,147 @@
     </section>
 
     <!-- ACCOUNT / AUTH SECTION -->
-    <section id="account" class="section alt">
+    <section id="account" class="section alt auth-section">
       <div class="container">
-        <h2>Account</h2>
+        <h2>DocSift account (email login)</h2>
         <p class="section-subtitle">
-          Create an account or log in to view your plan status. Your Pro subscription is tied to your login email.
+          Use your email and password to create an account or sign in. In the future, this account
+          will connect directly to your DocSift Pro subscription and usage.
         </p>
 
-        <div class="auth-grid">
-          <!-- LEFT: AUTH CARD -->
-          <div class="auth-card">
-            <h2>Sign in or create an account</h2>
-            <p>Use your email and a password. You can reset your password anytime.</p>
+        <div class="auth-card" id="auth-card">
+          <h2>Sign in or create an account</h2>
+          <p>Use your email and a password you’ll remember. You can reset it at any time.</p>
 
-            <div class="auth-tabs">
-              <button id="authTabLogin" class="auth-tab active" type="button">Log In</button>
-              <button id="authTabSignup" class="auth-tab" type="button">Create Account</button>
-              <button id="authTabReset" class="auth-tab" type="button">Reset Password</button>
-            </div>
+          <div class="auth-tabs">
+            <button type="button" class="auth-tab-btn active" id="tab-login">Log in</button>
+            <button type="button" class="auth-tab-btn" id="tab-signup">Create account</button>
+            <button type="button" class="auth-tab-btn" id="tab-reset">Reset password</button>
+          </div>
 
-            <!-- LOGIN -->
-            <form id="loginForm" class="auth-form" autocomplete="on">
-              <label for="login-email">Email</label>
-              <input id="login-email" type="email" placeholder="you@example.com" required />
+          <div id="auth-forms">
+            <!-- LOGIN FORM -->
+            <!-- LOGIN FORM -->
+<form id="login-form" class="auth-form">
+  <label for="login-email">Email</label>
+  <input
+    id="login-email"
+    type="email"
+    placeholder="you@example.com"
+    required
+  />
 
-              <label for="login-password">Password</label>
-              <input id="login-password" type="password" placeholder="••••••••" required />
+  <label for="login-password">Password</label>
+  <input
+    id="login-password"
+    type="password"
+    placeholder="••••••••"
+    required
+  />
 
-              <div class="auth-row">
-                <label class="auth-check">
-                  <input type="checkbox" id="loginShowPassword" />
-                  <span>Show password</span>
-                </label>
-              </div>
+  <label class="auth-toggle">
+    <input type="checkbox" id="login-show-password" />
+    <span>Show password</span>
+  </label>
 
-              <button id="loginBtn" class="btn primary full" type="submit">Log In</button>
+  <button
+    type="submit"
+    class="auth-btn-primary"
+    id="login-submit"
+  >
+    Log in
+  </button>
 
-              <p class="auth-hint">
-                Forgot your password? Click <strong>Reset Password</strong> above.
-              </p>
-            </form>
+  <button
+    type="button"
+    class="auth-btn-link"
+    id="login-to-signup"
+  >
+    Need an account? Create one
+  </button>
 
-            <!-- SIGNUP -->
-            <form id="signupForm" class="auth-form hidden" autocomplete="on">
-              <label for="signup-email">Email</label>
-              <input id="signup-email" type="email" placeholder="you@example.com" required />
+  <button
+    type="button"
+    class="auth-btn-link"
+    id="login-to-reset"
+  >
+    Forgot your password?
+  </button>
+</form>
 
-              <label for="signup-password">Password</label>
-              <input id="signup-password" type="password" placeholder="At least 6 characters" required />
 
-              <div class="auth-row">
-                <label class="auth-check">
-                  <input type="checkbox" id="signupShowPassword" />
-                  <span>Show password</span>
-                </label>
-              </div>
 
-              <button id="signupBtn" class="btn primary full" type="submit">Create Account</button>
+            <!-- SIGNUP FORM -->
+            <!-- SIGNUP FORM -->
+<form id="signup-form" class="auth-form" style="display:none;">
+  <label for="signup-email">Email</label>
+  <input
+    id="signup-email"
+    type="email"
+    placeholder="you@example.com"
+    required
+  />
 
-              <p class="auth-hint">
-                You’ll be logged in automatically after creating your account.
-              </p>
-            </form>
+  <label for="signup-password">Password</label>
+  <input
+    id="signup-password"
+    type="password"
+    placeholder="At least 6 characters"
+    required
+  />
 
-            <!-- RESET -->
-            <form id="resetForm" class="auth-form hidden" autocomplete="on">
+  <label class="auth-toggle">
+    <input type="checkbox" id="signup-show-password" />
+    <span>Show password</span>
+  </label>
+
+  <button
+    type="submit"
+    class="auth-btn-primary"
+    id="signup-submit"
+  >
+    Create account
+  </button>
+
+  <button
+    type="button"
+    class="auth-btn-link"
+    id="signup-to-login"
+  >
+    Already have an account? Log in
+  </button>
+</form>
+
+
+
+
+            <!-- RESET PASSWORD FORM -->
+            <form id="reset-form" class="auth-form" style="display:none;">
               <label for="reset-email">Email</label>
               <input id="reset-email" type="email" placeholder="you@example.com" required />
 
-              <button id="resetBtn" class="btn primary full" type="submit">Send Reset Email</button>
-
-              <p class="auth-hint">
-                We’ll email you a password reset link if an account exists for this email.
+              <button type="submit" class="auth-btn-primary" id="reset-submit">Send reset link</button>
+              <p class="auth-helper">
+                We'll email you a password reset link if there's an account for this address.
               </p>
+              <button type="button" class="auth-btn-link" id="reset-to-login">
+                Back to log in
+              </button>
             </form>
-
-            <div id="authMessage" class="auth-message"></div>
           </div>
 
-          <!-- RIGHT: PLAN CARD -->
-          <div class="plan-card">
-            <h2>Your plan</h2>
-            <p class="plan-subtitle">Log in to see your current plan and status.</p>
+          <div id="auth-error" class="auth-error"></div>
+          <div id="auth-success" class="auth-success"></div>
 
-            <div class="plan-status-row">
-              <div class="plan-label">Current plan</div>
-              <div id="planBadge" class="plan-badge">—</div>
-            </div>
+          <div id="auth-status" class="auth-status">
+  		<div>
+    			<span>Status:</span>
+    			<strong id="auth-status-text">Not signed in</strong>
+    			<div id="plan-status" class="plan-status"></div>
+  		</div>
+  		<button type="button" id="logout-button">Log out</button>
+	  </div>
 
-            <div class="plan-actions">
-              <button id="openAppBtn" class="btn secondary full" type="button">
-                Open App
-              </button>
-
-              <button id="upgradeBtn" class="btn primary full" type="button">
-                Get DocSift Pro
-              </button>
-
-              <button id="logoutBtn" class="btn ghost full" type="button">
-                Log Out
-              </button>
-            </div>
-
-            <p class="plan-footnote">
-              Pro activates automatically after checkout when you log in with the same email you used at purchase.
-            </p>
-          </div>
         </div>
       </div>
     </section>
